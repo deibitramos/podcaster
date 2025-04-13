@@ -6,6 +6,7 @@ import tseslint from 'typescript-eslint';
 import stylistic from '@stylistic/eslint-plugin';
 import reactX from 'eslint-plugin-react-x';
 import reactDom from 'eslint-plugin-react-dom';
+import pluginRouter from '@tanstack/eslint-plugin-router';
 
 export default tseslint.config(
   { ignores: ['dist'] },
@@ -14,7 +15,8 @@ export default tseslint.config(
       js.configs.recommended,
       ...tseslint.configs.strictTypeChecked,
       ...tseslint.configs.stylisticTypeChecked,
-      stylistic.configs.customize({ semi: true, braceStyle: '1tbs' })
+      stylistic.configs.customize({ semi: true, braceStyle: '1tbs' }),
+      ...pluginRouter.configs['flat/recommended'],
     ],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
@@ -40,6 +42,10 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
       '@stylistic/max-len': ['error', { code: 100 }],
+      '@typescript-eslint/restrict-template-expressions': [
+        'error',
+        { allowNumber: true },
+      ],
     },
   },
 );
