@@ -1,14 +1,12 @@
-import { createFileRoute } from '@tanstack/react-router';
+import z from 'zod';
+import { createFileRoute, useParams } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/podcast/$id')({
   component: PodcastView,
-  params: {
-    parse: ({ id }) => ({ id: Number(id) }),
-    stringify: ({ id }) => ({ id: String(id) }),
-  },
+  params: z.object({ id: z.coerce.number() }),
 });
 
 function PodcastView() {
-  const { id } = Route.useParams();
+  const { id } = useParams({ from: '/podcast/$id' });
   return <div className="p-2">{`TODO: Podcast ${id} View page`}</div>;
 }

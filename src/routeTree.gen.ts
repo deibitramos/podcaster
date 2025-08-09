@@ -8,104 +8,70 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as homeIndexRouteImport } from './routes/(home)/index'
+import { Route as PodcastIdRouteImport } from './routes/podcast/$id'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index/route'
-import { Route as PodcastIdImport } from './routes/podcast/$id'
-
-// Create/Update Routes
-
-const IndexRouteRoute = IndexRouteImport.update({
-  id: '/',
+const homeIndexRoute = homeIndexRouteImport.update({
+  id: '/(home)/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const PodcastIdRoute = PodcastIdImport.update({
+const PodcastIdRoute = PodcastIdRouteImport.update({
   id: '/podcast/$id',
   path: '/podcast/$id',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 
-// Populate the FileRoutesByPath interface
+export interface FileRoutesByFullPath {
+  '/podcast/$id': typeof PodcastIdRoute
+  '/': typeof homeIndexRoute
+}
+export interface FileRoutesByTo {
+  '/podcast/$id': typeof PodcastIdRoute
+  '/': typeof homeIndexRoute
+}
+export interface FileRoutesById {
+  __root__: typeof rootRouteImport
+  '/podcast/$id': typeof PodcastIdRoute
+  '/(home)/': typeof homeIndexRoute
+}
+export interface FileRouteTypes {
+  fileRoutesByFullPath: FileRoutesByFullPath
+  fullPaths: '/podcast/$id' | '/'
+  fileRoutesByTo: FileRoutesByTo
+  to: '/podcast/$id' | '/'
+  id: '__root__' | '/podcast/$id' | '/(home)/'
+  fileRoutesById: FileRoutesById
+}
+export interface RootRouteChildren {
+  PodcastIdRoute: typeof PodcastIdRoute
+  homeIndexRoute: typeof homeIndexRoute
+}
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/(home)/': {
+      id: '/(home)/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof homeIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/podcast/$id': {
       id: '/podcast/$id'
       path: '/podcast/$id'
       fullPath: '/podcast/$id'
-      preLoaderRoute: typeof PodcastIdImport
-      parentRoute: typeof rootRoute
+      preLoaderRoute: typeof PodcastIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
-}
-
-// Create and export the route tree
-
-export interface FileRoutesByFullPath {
-  '/': typeof IndexRouteRoute
-  '/podcast/$id': typeof PodcastIdRoute
-}
-
-export interface FileRoutesByTo {
-  '/': typeof IndexRouteRoute
-  '/podcast/$id': typeof PodcastIdRoute
-}
-
-export interface FileRoutesById {
-  __root__: typeof rootRoute
-  '/': typeof IndexRouteRoute
-  '/podcast/$id': typeof PodcastIdRoute
-}
-
-export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/podcast/$id'
-  fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/podcast/$id'
-  id: '__root__' | '/' | '/podcast/$id'
-  fileRoutesById: FileRoutesById
-}
-
-export interface RootRouteChildren {
-  IndexRouteRoute: typeof IndexRouteRoute
-  PodcastIdRoute: typeof PodcastIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRouteRoute: IndexRouteRoute,
   PodcastIdRoute: PodcastIdRoute,
+  homeIndexRoute: homeIndexRoute,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/podcast/$id"
-      ]
-    },
-    "/": {
-      "filePath": "index/route.tsx"
-    },
-    "/podcast/$id": {
-      "filePath": "podcast/$id.tsx"
-    }
-  }
-}
-ROUTE_MANIFEST_END */
