@@ -13,11 +13,20 @@ export const columns: Column<Episode>[] = [
   },
   {
     label: 'Title',
-    className: 'lg:w-72',
+    className: 'w-80',
     cell: episode => <TitleCell episode={episode} />,
   },
-  { key: 'description', label: 'Topic' },
-  { key: 'releaseDate', label: 'Released', cell: episode => formatDateToNow(episode.releaseDate) },
+  {
+    key: 'description',
+    label: 'Topic',
+    className: 'hidden lg:table-cell',
+    cell: episode => <p className="text-ellipsis line-clamp-3">{episode.description}</p>,
+  },
+  {
+    key: 'releaseDate',
+    label: 'Released',
+    cell: episode => formatDateToNow(episode.releaseDate),
+  },
   {
     key: 'duration',
     label: 'Duration',

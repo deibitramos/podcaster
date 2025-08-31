@@ -25,32 +25,34 @@ export const Route = createFileRoute('/podcast/$id')({
 
 function PodcastView() {
   const { data, filter, setFilter, goBack } = usePodcastView();
+  const filterValue = filter.toLowerCase();
+  const episodes = data.episodes.filter(x => x.title.toLowerCase().includes(filterValue));
 
   return (
     <>
-      <div className="flex h-[50px] gap-5 mt-1.5 mb-5">
-        <Button onClick={goBack}>
+      <div className="flex h-14 gap-4 mt-1.5 mb-5">
+        <Button onClick={goBack} size="lg" className="w-10 my-2">
           <ChevronLeftIcon fontSize="large" />
         </Button>
         <SearchBar filter={filter} setFilter={setFilter} />
-        <div
-          className={cn('w-full h-[280px] mt-[22px] rounded-[15px] bg-podcast',
-            'bg-cover bg-no-repeat bg-center')}
-          data-testid="header-image"
-        />
-        <div className="mb-20">
-          <div className="grid grid-cols-podcastView gap-2 lg:-mb-16 lg:gap-24">
-            <PlayerCell
-              podcastId={data.podcast.id}
-              episodeId={data.episodes[0].id}
-              className="h-[60px] w-[60px]"
-            />
-            <span className="text-[32px] text-center text-white font-bold">
-              {data.podcast.name}
-            </span>
-          </div>
-          <DataTable columns={columns} data={data.episodes} />
+      </div>
+      <div
+        className={cn('w-full h-[280px] mt-4 rounded-[15px] bg-podcast',
+          'bg-cover bg-no-repeat bg-center')}
+        data-testid="header-image"
+      />
+      <div className="mb-20">
+        <div className="grid grid-cols-podcast-view gap-2 lg:gap-24 items-center">
+          <PlayerCell
+            podcastId={data.podcast.id}
+            episodeId={data.episodes[0].id}
+            className="size-16"
+          />
+          <span className="text-[32px] text-center text-white font-bold">
+            {data.podcast.name}
+          </span>
         </div>
+        <DataTable columns={columns} data={episodes} />
       </div>
     </>
   );

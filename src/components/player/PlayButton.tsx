@@ -18,11 +18,10 @@ function PlayButton({ playing, onPlay, className, ...props }: Props) {
 
   return (
     <Button
-      variant="secondary"
       size="icon"
       className={cn(
-        'rounded-full p-0 hover:bg-gray-600 transition-colors duration-300',
-        'flex items-center justify-center cursor-pointer',
+        'rounded-full p-0 transition-colors duration-300',
+        'flex items-center justify-center',
         className,
       )}
       onClick={onInternalClick}

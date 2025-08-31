@@ -12,7 +12,7 @@ function PlayerContent() {
   return (
     <>
       <img className="w-full h-full" src={episode.imageUrl} alt={episode.title} />
-      <div className="flex flex-col mr-std leading-5">
+      <div className="flex flex-col mr-4 leading-5">
         <span className="text-white leading-5">{episode.title}</span>
         <span className="leading-5">{podcast.author}</span>
       </div>
@@ -29,8 +29,8 @@ export default function Player() {
   return (
     <Drawer open={trackRequested}>
       <DrawerContent>
-        <div className={cn('fixed bottom-0 h-28 w-full pr-std bg-bgGray',
-          'grid grid-cols-playerShort lg:grid-cols-playerLong gap-5 items-center')}
+        <div className={cn('fixed bottom-0 h-28 w-full pr-4 bg-bg-gray',
+          'grid grid-cols-player-short lg:grid-cols-player-long gap-5 items-center')}
         >
           <PlayerProvider>
             <PlayerContent />

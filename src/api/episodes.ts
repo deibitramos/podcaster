@@ -9,7 +9,7 @@ export type PodcastWithEpisodes = { podcast: Podcast; episodes: Episode[] };
 
 const fetchEpisodes = async (podcastId: number, options?: { top1?: boolean }) => {
   const { top1 = false } = options ?? {};
-  const limit = top1 ? 1 : 200;
+  const limit = top1 ? 1 : 20;
   const encodedUrl = getEncodedUrl(`lookup?id=${podcastId}&entity=podcastEpisode&limit=${limit}`);
   const { data } = await axios.get<ITunesResults>(`${BASEURL}${encodedUrl}`);
   return transformEpisodes(data);

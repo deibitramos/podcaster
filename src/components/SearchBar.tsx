@@ -10,7 +10,7 @@ function SearchBar({ filter, setFilter }: Props) {
   };
 
   return (
-    <div className="p-2 flex flex-col gap-4 items-center justify-center">
+    <div className="py-2 w-full flex flex-col gap-4 items-center justify-center">
       <IconInput
         name="search"
         parentClassName="w-full"

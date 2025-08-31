@@ -20,7 +20,7 @@ const Progress = () => {
   const percentage = getBarPercentage(currentTime, duration);
 
   return (
-    <div className="flex mx-std items-center">
+    <div className="flex mx-4 items-center">
       <span className="w-14">{startTime}</span>
       <LinearProgress value={percentage} data-testid="progress-bar" />
       <span className="text-white w-14">{endTime}</span>

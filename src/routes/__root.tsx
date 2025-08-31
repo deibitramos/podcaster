@@ -19,6 +19,7 @@ export const Route = createRootRouteWithContext<RouteContext>()({
 function RootLayout() {
   return (
     <>
+      <div id="backstyle" />
       <Container>
         <Outlet />
       </Container>

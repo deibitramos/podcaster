@@ -37,7 +37,10 @@ export function DataTable<T extends IDType>({ columns, data }: Props<T>) {
         <TableHeader>
           <TableRow>
             {columns.map(col => (
-              <TableHead key={col.key ?? col.label}>
+              <TableHead
+                key={col.key ?? col.label}
+                className={col.className}
+              >
                 {col.label ?? ''}
               </TableHead>
             ))}

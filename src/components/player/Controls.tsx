@@ -24,7 +24,7 @@ const Controls = () => {
   const isPlaying = playing === 'PLAYING';
 
   return (
-    <div className="grid grid-cols-controls gap-5 items-center mx-std">
+    <div className="grid grid-cols-controls gap-5 items-center mx-4">
       <Button
         className="size-10"
         onClick={setShuffle}
@@ -41,7 +41,7 @@ const Controls = () => {
       >
         <SkipBackIcon />
       </Button>
-      <PlayButton className="w-[50px] h-[50px]" onPlay={play} playing={isPlaying} />
+      <PlayButton className="w-12 h-12" onPlay={play} playing={isPlaying} />
       <Button
         className="size-10"
         onClick={nextTrack}

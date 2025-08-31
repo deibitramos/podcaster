@@ -6,12 +6,25 @@
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-destructive: var(--destructive);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+
+  --color-bg-gray: #1A1A1A;
+  --color-hover-gray: #282828;
+  --color-pause-blue: #5C67DE;
+  --color-light: #FFFFFF08;
+
+  --background-image-podcast: url('/images/podcast.png');
+  --grid-template-columns-podcast-view: 64px 1fr 64px;
+  --grid-template-columns-player-long: 110px 2fr 290px 3fr 135px;
+  --grid-template-columns-player-short: 110px 1fr 290px;
+  --grid-template-columns-controls: 40px 40px 50px 40px 40px;
 }
 
 :root {
@@ -19,6 +32,8 @@
   --foreground: oklch(0.87 0 0);
   --primary: oklch(0.87 0 0);
   --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.87 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
   --destructive: oklch(0.704 0.191 22.216);
@@ -32,19 +47,17 @@
     @apply border-border outline-ring/50;
   }
   body {
-    background: linear-gradient(0deg, rgba(10, 10, 10, 0.2), rgba(10, 10, 10, 0.2)),
-      linear-gradient(131.55deg, #1B1B1B 0%, #14151F 88.91%);
     font-family: Quicksand, sans-serif;
     @apply text-foreground;
-  }
-}
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
+    #root {
+       @apply min-h-screen w-full relative bg-black;
+
+       #backstyle {
+         @apply fixed inset-0 z-0;
+         background: radial-gradient(ellipse 80% 90% at 50% 5%, rgba(139, 92, 246, 0.25), transparent 80%), #000000;
+       }
+    }
   }
 }
 
@@ -84,8 +97,6 @@
   --card-foreground: oklch(0.87 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.87 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.87 0 0);
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.87 0 0);
   --chart-1: oklch(0.488 0.243 264.376);
