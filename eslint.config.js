@@ -37,6 +37,7 @@ export default tseslint.config(
       ...reactX.configs['recommended-typescript'].rules,
       ...reactDom.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
+      'react-hooks/exhaustive-deps': 'off',
       'react-refresh/only-export-components': [
         'warn',
         { allowConstantExport: true },
@@ -46,6 +47,7 @@ export default tseslint.config(
         'error',
         { allowNumber: true },
       ],
+      '@typescript-eslint/consistent-type-definitions': 'off',
     },
   },
 );

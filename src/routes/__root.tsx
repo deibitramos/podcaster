@@ -1,21 +1,28 @@
-import Player from '@/components/Player';
-import { createRootRoute, Outlet } from '@tanstack/react-router';
+import { Container } from '@/components/Container';
+import Player from '@/components/player/Player';
+import { QueryClient } from '@tanstack/react-query';
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 
-export const Route = createRootRoute({
+type RouteContext = { qc: QueryClient };
+
+export const Route = createRootRouteWithContext<RouteContext>()({
   component: () => (
     <>
       <RootLayout />
       <TanStackRouterDevtools />
     </>
   ),
+  errorComponent: () => <div>Error loading route</div>,
 });
 
 function RootLayout() {
   return (
-    <div>
-      <Outlet />
+    <>
+      <Container>
+        <Outlet />
+      </Container>
       <Player />
-    </div>
+    </>
   );
 }
