@@ -4,6 +4,7 @@ import { PlayerSlice, PlayerState } from './types';
 
 const initial: PlayerState = {
   requestPodcastId: 0,
+  requestEpisodeId: undefined,
   playlistEpisodeIds: [],
   currentIndex: -1,
   volume: 50,

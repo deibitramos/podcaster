@@ -4,6 +4,7 @@ export type PlayState = 'PLAYING' | 'PAUSED' | 'STOPPED';
 
 export type PlayerState = {
   requestPodcastId: number;
+  requestEpisodeId: number | undefined;
   playlistEpisodeIds: number[];
   currentIndex: number;
   volume: number;

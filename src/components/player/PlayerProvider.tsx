@@ -9,11 +9,9 @@ import TrackContext from './TrackContext';
 type Props = { children: React.ReactNode };
 function PlayerProvider({ children }: Props) {
   const requestPodcastId = useAppStore(state => state.requestPodcastId);
-  const playlistEpisodeIds = useAppStore(state => state.playlistEpisodeIds);
-  const currentIndex = useAppStore(state => state.currentIndex);
+  const requestEpisodeId = useAppStore(state => state.requestEpisodeId);
 
-  const currentEpisodeId = playlistEpisodeIds[currentIndex];
-  const data = usePodcastEpisode(requestPodcastId, currentEpisodeId);
+  const data = usePodcastEpisode(requestPodcastId, requestEpisodeId);
   const { isFetching, error } = data;
 
   const track = data.episode ? mapTrack(requestPodcastId, data.episode) : null;
@@ -21,7 +19,7 @@ function PlayerProvider({ children }: Props) {
   // Memoize the context value to prevent unnecessary re-renders
   const trackValue = useMemo(() => track, [track]);
 
-  if (isFetching) return <Spinner />;
+  if (isFetching) return <Spinner size="lg" />;
   if (error) return <div>Error!</div>;
   if (!data.episode || !trackValue) return null;
 

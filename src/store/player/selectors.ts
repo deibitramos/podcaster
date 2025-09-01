@@ -1,15 +1,13 @@
 import { PlayerSlice } from './types';
 
-export const selectCurrent = ({ playlistEpisodeIds, currentIndex }: PlayerSlice) =>
-  playlistEpisodeIds[currentIndex];
-
 export const selectIsPlayingThis = (podcastId: number, episodeId?: number) =>
   (slice: PlayerSlice) => {
     if (slice.playState !== 'PLAYING' || slice.currentIndex === -1
       || slice.requestPodcastId !== podcastId)
       return false;
 
-    return episodeId ? selectCurrent(slice) === episodeId : slice.currentIndex === 0;
+    const currentEpisodeId = slice.playlistEpisodeIds[slice.currentIndex];
+    return episodeId ? currentEpisodeId === episodeId : slice.currentIndex === 0;
   };
 
 export const selectControlsState = (slice: PlayerSlice) => {

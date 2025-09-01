@@ -1,10 +1,13 @@
-import { StrictMode } from 'react';
+import { scan } from 'react-scan';
 import { createRoot } from 'react-dom/client';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider, createRouter } from '@tanstack/react-router';
 import { routeTree } from './routeTree.gen';
 import { qc } from './qc';
+import { REACT_SCAN } from './lib/constants';
 import './index.css';
+
+scan({ enabled: REACT_SCAN });
 
 const router = createRouter({
   routeTree,
@@ -22,9 +25,7 @@ declare module '@tanstack/react-router' {
 const root = document.getElementById('root')!;
 
 createRoot(root).render(
-  <StrictMode>
-    <QueryClientProvider client={qc}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  </StrictMode>,
+  <QueryClientProvider client={qc}>
+    <RouterProvider router={router} />
+  </QueryClientProvider>,
 );

@@ -8,7 +8,8 @@ interface Props {
 }
 
 const sizeMap = { sm: 16, md: 24, lg: 32, xl: 48 };
-const strokeWidthMap = { sm: 2, md: 2.5, lg: 3, xl: 4 };
+const strokeWidthMap = { sm: 2, md: 3, lg: 4, xl: 6 };
+const parentPadding = { sm: 'p-1', md: 'p-2', lg: 'p-3', xl: 'p-4' };
 
 function Spinner(props: Props) {
   const { size = 'md', variant = 'default', className, strokeWidth: strokeWidthParam } = props;
@@ -25,7 +26,11 @@ function Spinner(props: Props) {
 
   return (
     <div
-      className={cn('inline-flex items-center justify-center', className)}
+      className={cn(
+        'inline-flex items-center justify-center w-full',
+        parentPadding[size],
+        className,
+      )}
       role="status"
       aria-label="Loading"
     >

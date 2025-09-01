@@ -21,16 +21,18 @@ export const query = {
     queryFn: () => fetchEpisodes(podcastId),
   }),
   lastEpisode: (podcastId: number) => queryOptions({
-    queryKey: ['lastEpisode', podcastId],
+    queryKey: ['episodes', podcastId, true],
     queryFn: () => fetchEpisodes(podcastId, { top1: true }),
   }),
 };
 
-export const findCurrentInCache = (qc: QueryClient, podcastId: number) => {
+export const findEpisodeInCache = (qc: QueryClient, podcastId: number, episodeId?: number) => {
   const queriesData = qc.getQueriesData<PodcastWithEpisodes>({
     queryKey: ['episodes', podcastId],
   });
-  const [, result] = queriesData.find(([, data]) => (data?.episodes.length ?? 0) > 0) ?? [];
+  const [, result] = queriesData.find(([, data]) =>
+    (data?.episodes.some(e => !episodeId || e.id === episodeId)),
+  ) ?? [];
   return result;
 };
 

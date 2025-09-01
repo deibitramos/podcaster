@@ -16,10 +16,10 @@ export const Route = createFileRoute('/podcast/$id')({
   component: PodcastView,
 
   params: typeWithParse(type({ id: 'string.integer.parse' })),
-  loader: async ({ context: { qc }, params: { id } }) => {
-    await qc.prefetchQuery(query.episodes(id));
+  loader: ({ context: { qc }, params: { id } }) => {
+    void qc.prefetchQuery(query.episodes(id));
   },
-  pendingComponent: () => <Spinner />,
+  pendingComponent: () => <Spinner size="xl" />,
   errorComponent: () => <div>Error loading podcast</div>,
 });
 

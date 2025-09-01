@@ -1,11 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useTrack } from './useTrack';
-import { findCurrentInCache } from '@/api/episodes';
+import { findEpisodeInCache } from '@/api/episodes';
 
 function useGetPlayingData() {
   const track = useTrack();
   const qc = useQueryClient();
-  const current = findCurrentInCache(qc, track.podcastId);
+  const current = findEpisodeInCache(qc, track.podcastId, track.episodeId);
 
   if (!current) {
     throw new Error('Current episode not found');

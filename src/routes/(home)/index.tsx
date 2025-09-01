@@ -12,8 +12,8 @@ export const Route = createFileRoute('/(home)/')({ component: PodcastSearch });
 type ResultsProps = { query: UseQueryResult<Podcast[]> };
 function PodcastResults({ query }: ResultsProps) {
   const { isPending, isFetching, isError, data } = query;
+  if (isFetching) return <Spinner size="xl" />;
   if (isPending) return null;
-  if (isFetching) return <Spinner />;
   if (isError) return <div>Error loading podcasts</div>;
   return <DataTable data={data} columns={columns} />;
 }
