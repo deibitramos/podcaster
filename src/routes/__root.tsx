@@ -1,4 +1,6 @@
 import { Container } from '@/components/Container';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 import Player from '@/components/player/Player';
 import { RouteErrorComponent } from '@/components/RouteErrorComponent';
 import { ToastProvider } from '@/components/ui/toast';
@@ -22,9 +24,13 @@ function RootLayout() {
   return (
     <>
       <div id="backstyle" />
-      <Container>
-        <Outlet />
-      </Container>
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <Container>
+          <Outlet />
+        </Container>
+        <Footer />
+      </div>
       <Player />
       <ToastProvider />
     </>

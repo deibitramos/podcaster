@@ -37,19 +37,19 @@ function PodcastView() {
         <Button onClick={goBack} size="lg" className="w-10 my-2">
           <ChevronLeftIcon fontSize="large" />
         </Button>
-        <SearchBar filter={filter} setFilter={setFilter} />
+        <SearchBar filter={filter} setFilter={setFilter} placeholder="Filter episodes..." />
       </div>
       <div
         className={cn('w-full h-[280px] mt-4 rounded-[15px] bg-podcast',
           'bg-cover bg-no-repeat bg-center')}
         data-testid="header-image"
       />
-      <div className="mb-20">
+      <div>
         <div className="grid grid-cols-podcast-view gap-2 lg:gap-24 items-center">
           <PlayerCell
             podcastId={data.podcast.id}
             episodeId={data.episodes[0].id}
-            className="size-16"
+            className="size-14 m-2"
           />
           <span className="text-[32px] text-center text-white font-bold">
             {data.podcast.name}

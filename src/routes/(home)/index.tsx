@@ -3,6 +3,7 @@ import { DataTable } from '@/components/DataTable';
 import { columns } from './-components/columns';
 import usePodcastSearch from './-hooks/usePodcastSearch';
 import SearchBar from '@/components/SearchBar';
+import { Hero } from '@/components/Hero';
 import { Spinner } from '@/components/ui/spinner';
 import { ErrorComponent } from '@/components/ui/error';
 import { UseQueryResult } from '@tanstack/react-query';
@@ -31,7 +32,8 @@ function PodcastSearch() {
 
   return (
     <>
-      <SearchBar filter={filter} setFilter={onChangeFilter} />
+      <Hero />
+      <SearchBar filter={filter} setFilter={onChangeFilter} placeholder="Search for podcasts..." />
       <PodcastResults query={query} />
     </>
   );

@@ -2,9 +2,13 @@ import { ChangeEventHandler } from 'react';
 import { IconInput } from './ui/input';
 import { SearchIcon } from 'lucide-react';
 
-type Props = { filter: string; setFilter: (value: string) => void };
+type Props = {
+  filter: string;
+  setFilter: (value: string) => void;
+  placeholder?: string;
+};
 
-function SearchBar({ filter, setFilter }: Props) {
+function SearchBar({ filter, setFilter, placeholder = 'Search' }: Props) {
   const onChangeHandler: ChangeEventHandler<HTMLInputElement> = (e) => {
     setFilter(e.currentTarget.value);
   };
@@ -14,7 +18,7 @@ function SearchBar({ filter, setFilter }: Props) {
       <IconInput
         name="search"
         parentClassName="w-full"
-        placeholder="Search"
+        placeholder={placeholder}
         icon={SearchIcon}
         value={filter}
         onChange={onChangeHandler}

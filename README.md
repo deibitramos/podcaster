@@ -1,8 +1,8 @@
 # Podcaster App 🎧
 
-This project is a v2 for my previous repo named [podcast-app-challenge](https://github.com/deibitramos/podcast-app-challenge), a code challenge from an interview I had some years ago.
+This project is a v2 for my previous repo named [podcast-app-challenge](https://github.com/deibitramos/podcast-app-challenge), a code challenge from an interview I had some years ago. My intention here is to rework this to conform to more current technologies and best practices for React frontend development.
 
-My intention here is to rework this to conform to more current technologies and best practices for React frontend development.
+The application consists of a podcasts search consuming real data from publicly available iTunes API, and its own media player.
 
 This project features:
 - [React 19](https://react.dev/) & [Typescript](https://www.typescriptlang.org/)
