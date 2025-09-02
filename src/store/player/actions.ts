@@ -28,13 +28,14 @@ const actions = (set: SetState<PlayerSlice>): PlayerActions => {
       set({
         requestPodcastId: podcastId,
         requestEpisodeId: undefined,
-        currentIndex: 0,
         playState: current ? 'PLAYING' : 'STOPPED',
-        ...(current ? { playlistEpisodeIds: [current.episodes[0].id] } : {}),
+        ...(current
+          ? { currentIndex: 0, playlistEpisodeIds: [current.episodes[0].id] }
+          : {}),
       });
     },
     retryPlayLastEpisode: (episodeId: number) => {
-      set({ playlistEpisodeIds: [episodeId], playState: 'PLAYING' });
+      set({ currentIndex: 0, playlistEpisodeIds: [episodeId], playState: 'PLAYING' });
     },
     play: () => { set({ playState: 'PLAYING' }); },
     pause: () => { set({ playState: 'PAUSED' }); },
