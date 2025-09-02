@@ -2,6 +2,17 @@ import { PropsWithChildren, useEffect } from 'react';
 import { useAppStore } from '@/store';
 import audio, { AudioControl } from '@/store/player/AudioControl';
 import { useTrack } from './hooks/useTrack';
+import { showToast } from '@/lib/toast';
+
+function getAudioErrorMessage(errorCode: number): string {
+  switch (errorCode) {
+    case 1: return 'Media loading aborted';
+    case 2: return 'Network error while loading media';
+    case 3: return 'Media decoding failed';
+    case 4: return 'Media format not supported';
+    default: return 'Unknown audio error';
+  }
+}
 
 function AudioController({ children }: PropsWithChildren) {
   const track = useTrack();
@@ -17,7 +28,14 @@ function AudioController({ children }: PropsWithChildren) {
     };
 
     const errorHandler = (event: Event) => {
-      console.error('Audio error:', (event.target as AudioControl).error);
+      const audioElement = event.target as AudioControl;
+      const error = audioElement.error;
+
+      if (error) {
+        const errorMessage = getAudioErrorMessage(error.code);
+        console.error('Audio playback error:', error);
+        showToast.error(`Audio Error: ${errorMessage}`);
+      }
       stop();
     };
 

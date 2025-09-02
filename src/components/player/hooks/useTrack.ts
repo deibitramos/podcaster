@@ -1,10 +1,9 @@
 import { use } from 'react';
 import TrackContext from '../TrackContext';
+import { assertExists } from '@/lib/errors';
 
 export const useTrack = () => {
   const track = use(TrackContext);
-  if (!track) {
-    throw new Error('useTrack must be used within a PlayerProvider');
-  }
+  assertExists(track, 'track');
   return track;
 };

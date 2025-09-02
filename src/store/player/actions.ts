@@ -3,14 +3,13 @@ import { changeTrack, getNextRepeat } from './utils';
 import { SetState } from '../types';
 import { qc } from '@/qc';
 import { findEpisodeInCache, PodcastWithEpisodes } from '@/api/episodes';
+import { assertExists } from '@/lib/errors';
 
 const actions = (set: SetState<PlayerSlice>): PlayerActions => {
   return {
     playPodcastEpisode: (podcastId: number, episodeId: number) => {
       const result = qc.getQueryData<PodcastWithEpisodes>(['episodes', podcastId]);
-      if (!result) {
-        throw new Error('Episodes not found in cache');
-      }
+      assertExists(result, 'result');
 
       const episodeIds = result.episodes.map(e => e.id);
       const startIndex = episodeIds.indexOf(episodeId);
@@ -50,7 +49,3 @@ const actions = (set: SetState<PlayerSlice>): PlayerActions => {
 };
 
 export default actions;
-
-// if (getLastPodcastEpisode.matchFulfilled(action)) {
-//   audioPlay(false);
-// }

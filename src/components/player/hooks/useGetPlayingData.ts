@@ -1,21 +1,17 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useTrack } from './useTrack';
 import { findEpisodeInCache } from '@/api/episodes';
+import { assertExists } from '@/lib/errors';
 
 function useGetPlayingData() {
   const track = useTrack();
   const qc = useQueryClient();
-  const current = findEpisodeInCache(qc, track.podcastId, track.episodeId);
+  const podcastWithEpisodes = findEpisodeInCache(qc, track.podcastId, track.episodeId);
+  assertExists(podcastWithEpisodes, 'podcastWithEpisodes');
 
-  if (!current) {
-    throw new Error('Current episode not found');
-  }
-
-  const { podcast, episodes } = current;
+  const { podcast, episodes } = podcastWithEpisodes;
   const episode = episodes.find(e => e.id === track.episodeId);
-  if (!episode) {
-    throw new Error('Current episode not found');
-  }
+  assertExists(episode, 'episode');
 
   return { podcast, episode };
 }

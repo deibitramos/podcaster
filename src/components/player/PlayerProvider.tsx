@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { useAppStore } from '@/store';
 import usePodcastEpisode from './hooks/usePodcastEpisode';
 import { Spinner } from '../ui/spinner';
+import { ErrorComponent } from '../ui/error';
 import AudioController from './AudioController';
 import { mapTrack } from '@/entities/currentTrack';
 import TrackContext from './TrackContext';
@@ -20,7 +21,9 @@ function PlayerProvider({ children }: Props) {
   const trackValue = useMemo(() => track, [track]);
 
   if (isFetching) return <Spinner size="lg" />;
-  if (error) return <div>Error!</div>;
+  if (error) return (
+    <ErrorComponent title="Failed to load episode" error={error} variant="minimal" />
+  );
   if (!data.episode || !trackValue) return null;
 
   return (

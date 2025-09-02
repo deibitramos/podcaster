@@ -7,6 +7,7 @@ import SearchBar from '@/components/SearchBar';
 import { cn } from '@/lib/cn';
 import { DataTable } from '@/components/DataTable';
 import PlayerCell from '@/components/player/PlayerCell';
+import { RouteErrorComponent } from '@/components/RouteErrorComponent';
 import { query } from '@/api/episodes';
 import usePodcastView from './-hooks/usePodcastView';
 import { columns } from './-components/columns';
@@ -20,7 +21,9 @@ export const Route = createFileRoute('/podcast/$id')({
     void qc.prefetchQuery(query.episodes(id));
   },
   pendingComponent: () => <Spinner size="xl" />,
-  errorComponent: () => <div>Error loading podcast</div>,
+  errorComponent: ({ error }) => (
+    <RouteErrorComponent title="Error Loading Podcast" error={error} />
+  ),
 });
 
 function PodcastView() {

@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { BASEURL, getEncodedUrl } from '@/lib/constants';
-import { ITunesResults, transformITunesResults } from '@/lib/itunes';
+import { ITunesResult, ITunesResults, transformITunesResults } from '@/lib/itunes';
 import { mapPodcast } from './podcasts';
 import { Episode, Podcast } from '@/entities';
 import { QueryClient, queryOptions } from '@tanstack/react-query';
+import { AppError, assertExists } from '@/lib/errors';
 
 export type PodcastWithEpisodes = { podcast: Podcast; episodes: Episode[] };
 
@@ -12,7 +13,12 @@ const fetchEpisodes = async (podcastId: number, options?: { top1?: boolean }) =>
   const limit = top1 ? 1 : 20;
   const encodedUrl = getEncodedUrl(`lookup?id=${podcastId}&entity=podcastEpisode&limit=${limit}`);
   const { data } = await axios.get<ITunesResults>(`${BASEURL}${encodedUrl}`);
-  return transformEpisodes(data);
+
+  const episodeData = transformITunesResults(data);
+  if (!episodeData.length) {
+    throw AppError.notFound('Podcast', podcastId);
+  }
+  return transformEpisodes(episodeData);
 };
 
 export const query = {
@@ -36,16 +42,12 @@ export const findEpisodeInCache = (qc: QueryClient, podcastId: number, episodeId
   return result;
 };
 
-const transformEpisodes = (apiResults: ITunesResults): PodcastWithEpisodes => {
-  const episodeData = transformITunesResults(apiResults);
-  const podcastInfo = episodeData.find(data => data.kind === 'podcast');
-
-  if (!podcastInfo) {
-    throw new Error('Podcast information not found in the results');
-  }
+const transformEpisodes = (itunesData: ITunesResult[]): PodcastWithEpisodes => {
+  const podcastInfo = itunesData.find(data => data.kind === 'podcast');
+  assertExists(podcastInfo);
 
   const podcast = mapPodcast(podcastInfo);
-  const episodes: Episode[] = episodeData
+  const episodes: Episode[] = itunesData
     .filter(e => e.kind === 'podcast-episode')
     .map(e => ({
       id: e.trackId,

@@ -1,3 +1,5 @@
+import { AppError } from './errors';
+
 export type ItunesError = {
   errorMessage: string;
 };
@@ -22,7 +24,7 @@ export type ITunesResults = {
 
 export const transformITunesResults = (data: ITunesResults | ItunesError) => {
   if ('errorMessage' in data) {
-    throw new Error(data.errorMessage);
+    throw AppError.network(`iTunes API error: ${data.errorMessage}`);
   }
 
   return data.results;
