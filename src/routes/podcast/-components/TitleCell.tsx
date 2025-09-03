@@ -4,7 +4,7 @@ type Props = { episode: Episode };
 
 function TitleCell({ episode }: Props) {
   return (
-    <div className="flex items-center gap-5">
+    <div className="flex items-center gap-3 sm:gap-5">
       <img
         className="w-[45px] h-[45px] rounded-lg"
         src={episode.thumbnailUrl}

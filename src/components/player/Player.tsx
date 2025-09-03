@@ -9,7 +9,8 @@ export default function Player() {
   return (
     <div
       className={cn(
-        'fixed bottom-0 h-28 w-full pr-4 bg-bg-gray z-50',
+        'fixed bottom-0 w-full bg-bg-gray z-50',
+        'pb-[env(safe-area-inset-bottom)]',
         'transition-transform duration-800 ease-in-out',
         trackRequested ? 'translate-y-0' : 'translate-y-full',
       )}

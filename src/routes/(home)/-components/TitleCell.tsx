@@ -5,7 +5,7 @@ type Props = { podcast: Podcast };
 
 export function TitleCell({ podcast }: Props) {
   return (
-    <div className="flex items-center gap-5">
+    <div className="flex items-center gap-3 sm:gap-5">
       <img className="w-[45px] h-[45px] rounded-lg" src={podcast.thumbnailUrl} alt={podcast.name} />
       <div className="flex flex-col">
         <Link

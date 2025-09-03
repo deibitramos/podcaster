@@ -12,9 +12,10 @@ export const columns: Column<Podcast>[] = [
     cell: podcast => <PlayerCell podcastId={podcast.id} />,
   },
   { key: 'name', label: 'Name', cell: podcast => <TitleCell podcast={podcast} /> },
-  { key: 'genres', label: 'Genres' },
+  { key: 'genres', label: 'Genres', className: 'hidden sm:table-cell' },
   {
     label: 'Released',
+    className: 'hidden sm:table-cell',
     cell: podcast => formatDateToNow(podcast.releaseDate),
   },
 ];

@@ -24,7 +24,7 @@ function RootLayout() {
   return (
     <>
       <div id="backstyle" />
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-dvh">
         <Header />
         <Container>
           <Outlet />

@@ -25,11 +25,13 @@ export const columns: Column<Episode>[] = [
   {
     key: 'releaseDate',
     label: 'Released',
+    className: 'hidden sm:table-cell',
     cell: episode => formatDateToNow(episode.releaseDate),
   },
   {
     key: 'duration',
     label: 'Duration',
+    className: 'hidden sm:table-cell',
     cell: episode => calculateDuration(episode.duration),
   },
 ];

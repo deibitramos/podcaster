@@ -24,7 +24,9 @@ const Controls = () => {
   const isPlaying = playing === 'PLAYING';
 
   return (
-    <div className="grid grid-cols-controls gap-5 items-center mx-4">
+    <div className={cn('grid grid-cols-controls gap-2 sm:gap-4 px-1 sm:px-4',
+      'items-center justify-center')}
+    >
       <Button
         className={cn('size-10', shuffle && 'bg-accent hover:bg-accent/80')}
         variant="ghost"

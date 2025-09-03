@@ -24,8 +24,9 @@
 
   --background-image-podcast: url('/images/podcast.png');
   --grid-template-columns-podcast-view: 64px 1fr 64px;
-  --grid-template-columns-player-long: 110px 2fr 290px 3fr 135px;
-  --grid-template-columns-player-short: 110px 1fr 290px;
+  --grid-template-columns-player-lg: 120px 2fr 290px 3fr;
+  --grid-template-columns-player-sm: 120px 1fr 290px;
+  --grid-template-columns-player-init: clamp(64px, 20vw, 120px) 1fr;
   --grid-template-columns-controls: 40px 40px 50px 40px 40px;
 }
 
@@ -50,12 +51,15 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    @apply bg-black;
+  }
   body {
     font-family: Quicksand, sans-serif;
-    @apply text-foreground;
+    @apply text-foreground bg-black;
 
     #root {
-       @apply min-h-screen w-full relative bg-black;
+       @apply min-h-dvh w-full relative;
 
        #backstyle {
          @apply fixed inset-0 z-0;

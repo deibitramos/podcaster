@@ -40,7 +40,7 @@ function PodcastView() {
         <SearchBar filter={filter} setFilter={setFilter} placeholder="Filter episodes..." />
       </div>
       <div
-        className={cn('w-full h-[280px] mt-4 rounded-[15px] bg-podcast',
+        className={cn('w-full hidden sm:block h-60 mt-4 rounded-[15px] bg-podcast',
           'bg-cover bg-no-repeat bg-center')}
         data-testid="header-image"
       />
@@ -51,7 +51,7 @@ function PodcastView() {
             episodeId={data.episodes[0].id}
             className="size-14 m-2"
           />
-          <span className="text-[32px] text-center text-white font-bold">
+          <span className="text-2xl sm:text-4xl text-center text-white font-bold">
             {data.podcast.name}
           </span>
         </div>
