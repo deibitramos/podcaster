@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { BASEURL, getEncodedUrl } from '@/lib/constants';
 import { ITunesResult, ITunesResults, transformITunesResults } from '@/lib/itunes';
 import { mapPodcast } from './podcasts';
 import { Episode, Podcast } from '@/entities';
@@ -10,9 +9,9 @@ export type PodcastWithEpisodes = { podcast: Podcast; episodes: Episode[] };
 
 const fetchEpisodes = async (podcastId: number, options?: { top1?: boolean }) => {
   const { top1 = false } = options ?? {};
-  const limit = top1 ? 1 : 20;
-  const encodedUrl = getEncodedUrl(`lookup?id=${podcastId}&entity=podcastEpisode&limit=${limit}`);
-  const { data } = await axios.get<ITunesResults>(`${BASEURL}${encodedUrl}`);
+  const limit = encodeURIComponent(top1 ? 1 : 20);
+  const url = `/itunes/lookup?id=${podcastId}&entity=podcastEpisode&limit=${limit}`;
+  const { data } = await axios.get<ITunesResults>(url);
 
   const episodeData = transformITunesResults(data);
   if (!episodeData.length) {

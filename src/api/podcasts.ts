@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { Podcast } from '@/entities';
-import { BASEURL, getEncodedUrl } from '@/lib/constants';
 import { ITunesResult, ITunesResults, transformITunesResults } from '@/lib/itunes';
 import { queryOptions } from '@tanstack/react-query';
 
@@ -21,9 +20,8 @@ export const mapPodcast = (p: ITunesResult): Podcast => ({
 });
 
 const fetchPodcasts = async (term: string): Promise<Podcast[]> => {
-  const { data } = await axios.get<ITunesResults>(
-    `${BASEURL}${getEncodedUrl(`search?entity=podcast&limit=10&term=${term}`)}`,
-  );
+  const url = `/itunes/search?entity=podcast&limit=10&term=${encodeURIComponent(term)}`;
+  const { data } = await axios.get<ITunesResults>(url);
   const podcasts = transformITunesResults(data);
   return podcasts.map(mapPodcast);
 };

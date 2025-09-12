@@ -1,5 +1,7 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "source": "/itunes/search", "destination": "/api/itunes?endpoint=search" },
+    { "source": "/itunes/lookup", "destination": "/api/itunes?endpoint=lookup" },
+    { "source": "/((?!api|itunes).*)", "destination": "/index.html" }
   ]
 }
