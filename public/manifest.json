@@ -1,0 +1,16 @@
+{
+  "name": "Podcaster App",
+  "short_name": "Podcaster",
+  "description": "Search and listen to your favorite podcasts",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
