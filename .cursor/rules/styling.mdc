@@ -1,0 +1,114 @@
+---
+description: Tailwind CSS v4 and shadcn/ui styling conventions
+globs: src/**/*.tsx,src/index.css
+alwaysApply: false
+---
+# Styling
+
+## Tailwind CSS v4
+
+### Configuration
+Tailwind v4 uses CSS-based configuration in `src/index.css`:
+
+```css
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-primary: var(--primary);
+  /* Custom colors */
+  --color-bg-gray: #1A1A1A;
+  --color-hover-gray: #282828;
+  --color-pause-blue: #5C67DE;
+}
+```
+
+### CSS Variables
+Theme colors are defined as CSS variables in `:root`:
+
+```css
+:root {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.87 0 0);
+  --primary: oklch(0.87 0 0);
+  /* ... */
+}
+```
+
+### Custom Grid Templates
+Complex layouts use CSS custom properties:
+
+```css
+@theme inline {
+  --grid-template-columns-player-lg: 120px 2fr 290px 3fr;
+  --grid-template-columns-controls: 40px 40px 50px 40px 40px;
+}
+```
+
+Usage: `className="grid grid-cols-[var(--grid-template-columns-player-lg)]"`
+
+## Class Composition
+
+### The `cn()` Utility
+Always use `cn()` for conditional classes:
+
+```typescript
+import { cn } from '@/lib/cn';
+
+<div className={cn(
+  'base-classes',
+  isActive && 'active-classes',
+  className,
+)} />
+```
+
+### Long Class Lists
+For readability, use array join pattern:
+
+```typescript
+const buttonVariants = cva(
+  [
+    'inline-flex items-center justify-center gap-2',
+    'cursor-pointer rounded-md text-sm font-medium',
+    'disabled:pointer-events-none disabled:opacity-50',
+  ].join(' '),
+  { variants: { /* ... */ } }
+);
+```
+
+## shadcn/ui Components
+
+### Location
+UI primitives are in `src/components/ui/`:
+- `button.tsx` - Button with variants
+- `input.tsx` - Form inputs
+- `table.tsx` - Table components
+- `slider.tsx` - Range slider
+- `progress.tsx` - Progress bar
+- `spinner.tsx` - Loading spinner
+- `toast.tsx` - Toast notifications
+- `error.tsx` - Error display component
+
+### Component Pattern
+shadcn components use Radix primitives + cva:
+
+```typescript
+import { Slot } from '@radix-ui/react-slot';
+import { cva, type VariantProps } from 'class-variance-authority';
+
+const variants = cva('base', { variants: { /* ... */ } });
+
+function Component({ className, variant, asChild, ...props }: Props) {
+  const Comp = asChild ? Slot : 'button';
+  return <Comp className={cn(variants({ variant, className }))} {...props} />;
+}
+```
+
+### Responsive Design
+- Use responsive prefixes: `sm:`, `md:`, `lg:`
+- Mobile-first approach
+- Hide elements responsively: `hidden sm:table-cell`
+
+## Dark Mode
+This project uses a dark theme by default. All colors are optimized for dark backgrounds using OKLCH color space.

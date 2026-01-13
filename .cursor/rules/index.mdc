@@ -1,0 +1,60 @@
+---
+description: Podcaster project overview and core conventions - always applied
+alwaysApply: true
+---
+# Podcaster Project
+
+A podcast search and player application consuming iTunes API data with a custom media player.
+
+## Tech Stack
+
+- **React 19** with TypeScript (strict mode)
+- **Vite 7** with SWC for fast builds
+- **TanStack Router** for file-based routing with code splitting
+- **TanStack Query** for server state management
+- **Zustand** for client state management
+- **Tailwind CSS v4** with shadcn/ui components
+- **Vitest** for testing with MSW for mocking
+
+## Project Structure
+
+```
+src/
+├── api/              # API functions with TanStack Query options
+├── components/       # Shared components
+│   ├── player/       # Media player components
+│   └── ui/           # shadcn/ui primitives
+├── entities/         # Type definitions for domain models
+├── lib/              # Utilities and helpers
+├── routes/           # TanStack Router file-based routes
+│   ├── (home)/       # Home route with search
+│   │   ├── -components/  # Route-specific components
+│   │   └── -hooks/       # Route-specific hooks
+│   └── podcast/      # Podcast detail routes
+├── store/            # Zustand store with slices
+│   └── player/       # Player state slice
+└── test/             # Test utilities and MSW setup
+```
+
+## Key Conventions
+
+### Imports
+- Use `@/` path alias for all src imports
+- Prefer named exports over default exports (exception: route components)
+- Co-locate route-specific code in `-components/` and `-hooks/` directories
+
+### TypeScript
+- Use `type` keyword for type definitions (not `interface`)
+- Entities are defined in `src/entities/` with re-exports via `index.ts`
+- Use strict type checking - no `any` types
+
+### Code Style
+- Max line length: 100 characters
+- Semicolons required
+- 1TBS brace style
+- Use `cn()` utility for conditional class composition
+
+### File Naming
+- React components: PascalCase (`PlayerContent.tsx`)
+- Utilities and hooks: camelCase (`useDebounce.ts`, `dates.ts`)
+- Test files: `*.test.ts` or `*.test.tsx` next to source files

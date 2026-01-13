@@ -1,0 +1,102 @@
+---
+description: Zustand store and TanStack Query patterns
+globs: src/store/**/*.ts,src/api/**/*.ts,**/*hooks*/**/*.ts
+alwaysApply: false
+---
+# State Management
+
+## Zustand Store
+
+### Store Structure
+The global store is composed of slices using the slice pattern:
+
+```typescript
+// src/store/index.ts
+export const useAppStore = create<StoreState>()(
+  devtools((set, get, api) => ({
+    ...createPlayerSlice(set, get, api),
+    ...createSearchSlice(set, get, api),
+  })),
+);
+```
+
+### Creating Slices
+Each slice is a separate module with types, actions, and selectors:
+
+```typescript
+// Types
+export type SliceState = { value: string };
+export type SliceActions = { setValue: (v: string) => void };
+export type Slice = SliceState & SliceActions;
+
+// Slice creator
+const createSlice: StateCreatorFull<Slice> = set => ({
+  value: '',
+  setValue: (v) => { set({ value: v }, undefined, 'setValue'); },
+});
+```
+
+### Selectors
+- Use selectors for derived state
+- Place selectors in `selectors.ts` within the slice folder
+- Use `useShallowAppStore` for object selections to prevent unnecessary re-renders
+
+```typescript
+// Selector function
+export const selectControlsState = (slice: PlayerSlice) => {
+  const { currentIndex, playState, shuffle } = slice;
+  return { currentIndex, playState, shuffle };
+};
+
+// Usage with shallow comparison
+const controls = useShallowAppStore(selectControlsState);
+```
+
+### Conventions
+- Actions always include a name parameter for devtools: `set(state, undefined, 'actionName')`
+- Keep slice state flat when possible
+- Complex state logic goes in `utils.ts` within the slice folder
+
+## TanStack Query
+
+### Query Options Pattern
+Define query options in API modules for reuse:
+
+```typescript
+// src/api/podcasts.ts
+export const query = {
+  podcasts: (term: string) => queryOptions({
+    queryKey: ['podcasts', term],
+    queryFn: () => fetchPodcasts(term),
+  }),
+};
+```
+
+### Usage in Hooks
+Route-specific hooks compose query options with additional logic:
+
+```typescript
+const usePodcastSearch = () => {
+  const debouncedFilter = useDebounce(filter);
+  const podcastsQuery = useQuery({
+    ...query.podcasts(debouncedFilter),
+    enabled: debouncedFilter.length >= 3,
+  });
+  return { query: podcastsQuery, /* ... */ };
+};
+```
+
+### Query Keys
+- Use array format: `['entity', param1, param2]`
+- First element is the entity type
+- Subsequent elements are parameters
+
+### Cache Access
+Use `QueryClient` methods for cache operations:
+
+```typescript
+const findInCache = (qc: QueryClient, id: number) => {
+  const queriesData = qc.getQueriesData<Type>({ queryKey: ['entity', id] });
+  // ... process data
+};
+```

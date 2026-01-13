@@ -1,0 +1,100 @@
+---
+description: TanStack Router file-based routing conventions
+globs: src/routes/**/*.tsx,src/routeTree.gen.ts
+alwaysApply: false
+---
+# TanStack Router
+
+## Route Structure
+
+Routes use file-based routing with automatic code splitting:
+
+```
+src/routes/
+├── __root.tsx           # Root layout with providers
+├── (home)/              # Route group (parentheses = no URL segment)
+│   ├── index.tsx        # "/" route
+│   ├── -components/     # Route-specific components (dash = not a route)
+│   └── -hooks/          # Route-specific hooks
+└── podcast/
+    └── $id.tsx          # "/podcast/:id" dynamic route
+```
+
+## Conventions
+
+### Root Route
+The root route sets up the application shell:
+
+```typescript
+export const Route = createRootRouteWithContext<RouteContext>()({
+  component: () => (
+    <>
+      <RootLayout />
+      <TanStackRouterDevtools />
+    </>
+  ),
+  errorComponent: ({ error }) => <RouteErrorComponent error={error} />,
+});
+```
+
+### Route Context
+The router receives QueryClient via context for data loading:
+
+```typescript
+type RouteContext = { qc: QueryClient };
+
+const router = createRouter({
+  routeTree,
+  context: { qc },
+});
+```
+
+### Route Definitions
+Use `createFileRoute` for all routes:
+
+```typescript
+export const Route = createFileRoute('/(home)/')({
+  component: PodcastSearch,
+});
+```
+
+### Dynamic Routes
+Use `$` prefix for dynamic segments:
+
+```typescript
+// src/routes/podcast/$id.tsx
+export const Route = createFileRoute('/podcast/$id')({
+  component: PodcastView,
+  // Access params via useParams() or route context
+});
+```
+
+### Route Groups
+- Parentheses `()` create groups without URL segments
+- Dashes `-` prefix directories that shouldn't be routes
+- Route-specific components go in `-components/`
+- Route-specific hooks go in `-hooks/`
+
+### Navigation
+Use TanStack Router's `Link` component or `useNavigate`:
+
+```typescript
+import { Link } from '@tanstack/react-router';
+
+<Link to="/podcast/$id" params={{ id: podcast.id }}>
+  View Podcast
+</Link>
+```
+
+### Error Handling
+Each route can define its own error component:
+
+```typescript
+export const Route = createFileRoute('/path')({
+  component: Component,
+  errorComponent: ({ error }) => <ErrorComponent error={error} />,
+});
+```
+
+## Route Tree Generation
+The `routeTree.gen.ts` file is auto-generated. Never edit it manually.

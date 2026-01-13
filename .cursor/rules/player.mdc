@@ -1,0 +1,134 @@
+---
+description: Audio player implementation patterns
+globs: src/components/player/**/*,src/store/player/**/*
+alwaysApply: false
+---
+# Media Player
+
+## Architecture
+
+The player system consists of:
+
+1. **Store** (`src/store/player/`) - State management
+2. **Components** (`src/components/player/`) - UI and audio control
+3. **Hooks** (`src/components/player/hooks/`) - Player-specific hooks
+
+## Player State
+
+### State Shape
+
+```typescript
+type PlayerState = {
+  requestPodcastId: number;      // Currently requested podcast
+  requestEpisodeId: number | undefined;
+  playlistEpisodeIds: number[];  // Episode queue
+  currentIndex: number;          // Current track index (-1 = none)
+  volume: number;                // 0-100
+  currentTime: number;           // Playback position in seconds
+  playState: 'PLAYING' | 'PAUSED' | 'STOPPED';
+  repeat: 'NO' | 'ALL' | 'ONE';
+  shuffle: boolean;
+};
+```
+
+### Actions
+
+```typescript
+type PlayerActions = {
+  playPodcastEpisode: (podcastId: number, episodeId: number) => void;
+  tryPlayLastEpisode: (podcastId: number) => void;
+  play: () => void;
+  pause: () => void;
+  stop: () => void;
+  nextTrack: () => void;
+  prevTrack: () => void;
+  setCurrentTime: (time: number) => void;
+  setRepeat: () => void;
+  setShuffle: () => void;
+  setVolume: (volume: number) => void;
+};
+```
+
+## Component Structure
+
+```
+src/components/player/
+├── Player.tsx          # Main player container (slides up when active)
+├── PlayerProvider.tsx  # Context provider for audio element
+├── PlayerContent.tsx   # Player UI layout
+├── PlayerCell.tsx      # Play button for tables
+├── PlayButton.tsx      # Reusable play/pause button
+├── Controls.tsx        # Playback controls (prev/play/next/repeat/shuffle)
+├── Progress.tsx        # Progress bar with seek
+├── Volume.tsx          # Volume slider
+├── AudioController.tsx # Connects HTMLAudioElement to store
+├── TrackContext.tsx    # Current track data context
+└── hooks/
+    ├── useGetPlayingData.ts  # Fetch current track data
+    ├── usePodcastEpisode.ts  # Episode data hook
+    └── useTrack.ts           # Track context consumer
+```
+
+## Patterns
+
+### Audio Element Management
+The `AudioController` component syncs the HTML audio element with store state:
+
+```typescript
+// Updates store on audio events
+audioRef.current.ontimeupdate = () => {
+  setCurrentTime(audioRef.current.currentTime);
+};
+
+// Responds to store changes
+useEffect(() => {
+  if (playState === 'PLAYING') {
+    audioRef.current.play();
+  } else {
+    audioRef.current.pause();
+  }
+}, [playState]);
+```
+
+### Track Context
+Track data is provided via context to avoid prop drilling:
+
+```typescript
+// Provider
+<TrackContext.Provider value={{ episode, podcast }}>
+  {children}
+</TrackContext.Provider>
+
+// Consumer hook
+const { episode, podcast } = useTrack();
+```
+
+### Selectors
+Use selectors for derived state:
+
+```typescript
+// Check if specific episode is playing
+export const selectIsPlayingThis = (podcastId: number, episodeId?: number) =>
+  (slice: PlayerSlice) => {
+    if (slice.playState !== 'PLAYING') return false;
+    // ... check if this episode is current
+  };
+
+// Get controls state with disabled flags
+export const selectControlsState = (slice: PlayerSlice) => {
+  const disableNext = currentIndex === last && repeat === 'NO';
+  return { playing, shuffle, repeat, disableNext, /* ... */ };
+};
+```
+
+### Visibility Pattern
+Player slides in when a track is requested:
+
+```typescript
+const trackRequested = useAppStore(state => state.requestPodcastId !== 0);
+
+<div className={cn(
+  'fixed bottom-0 w-full',
+  trackRequested ? 'translate-y-0' : 'translate-y-full',
+)} />
+```

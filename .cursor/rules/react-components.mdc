@@ -1,0 +1,72 @@
+---
+description: React component patterns and conventions
+globs: src/components/**/*.tsx,src/routes/**/*.tsx
+alwaysApply: false
+---
+# React Components
+
+## Component Structure
+
+Components follow this pattern:
+
+```typescript
+import { cn } from '@/lib/cn';
+
+type Props = {
+  className?: string;
+  // ... other props
+};
+
+export function ComponentName({ className, ...props }: Props) {
+  return (
+    <div className={cn('base-classes', className)}>
+      {/* content */}
+    </div>
+  );
+}
+```
+
+## Patterns
+
+### Function Components
+- Always use function declarations (not arrow functions) for components
+- Export named functions (not default exports) except for route components
+- Props type defined inline with `type Props = {...}`
+
+### Class Names
+- Use `cn()` from `@/lib/cn` for conditional/merged class names
+- Tailwind classes are composed using arrays joined with `.join(' ')` for readability
+- Use CSS variables defined in `index.css` for theme colors
+
+### UI Components (shadcn/ui)
+UI primitives are in `src/components/ui/` and follow shadcn/ui conventions:
+- Built on Radix UI primitives
+- Use `class-variance-authority` (cva) for variants
+- Support `asChild` pattern via Radix Slot
+
+```typescript
+// Example: Button with variants
+const buttonVariants = cva(['base-classes'].join(' '), {
+  variants: {
+    variant: { default: '...', outline: '...' },
+    size: { default: '...', sm: '...', lg: '...' },
+  },
+  defaultVariants: { variant: 'secondary', size: 'default' },
+});
+```
+
+### Data Display
+- Use `DataTable` component with column definitions for tabular data
+- Column definitions support key-based and custom render cells
+
+```typescript
+const columns: Column<Entity>[] = [
+  { key: 'name', label: 'Name' },
+  { label: 'Custom', cell: (row) => <CustomCell data={row} /> },
+];
+```
+
+### Route-Specific Components
+- Place in `-components/` directory within the route folder
+- Use TanStack Router's `createFileRoute` for route definitions
+- Error handling via `errorComponent` prop

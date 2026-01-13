@@ -1,0 +1,137 @@
+---
+description: API patterns and data fetching with iTunes API
+globs: src/api/**/*.ts,api/**/*.ts,src/lib/itunes.ts
+alwaysApply: false
+---
+# API & Data Fetching
+
+## iTunes API Integration
+
+### API Proxy
+Requests go through a Vercel serverless function at `/api/itunes.ts` to avoid CORS:
+
+```typescript
+// api/itunes.ts - Vercel serverless function
+// Proxies requests to itunes.apple.com
+```
+
+### API Modules
+API functions are in `src/api/` with query options:
+
+```typescript
+// src/api/podcasts.ts
+import { queryOptions } from '@tanstack/react-query';
+
+export const query = {
+  podcasts: (term: string) => queryOptions({
+    queryKey: ['podcasts', term],
+    queryFn: () => fetchPodcasts(term),
+  }),
+};
+```
+
+### Data Transformation
+iTunes responses are transformed to domain entities:
+
+```typescript
+// Transform iTunes result to domain entity
+export const mapPodcast = (p: ITunesResult): Podcast => ({
+  id: p.trackId,
+  name: p.trackName,
+  author: p.artistName,
+  genres: p.genres.join(', '),
+  releaseDate: p.releaseDate,
+  thumbnailUrl: p.artworkUrl60,
+});
+```
+
+## Domain Entities
+
+### Types Location
+Entity types are defined in `src/entities/`:
+
+```typescript
+// src/entities/podcast.ts
+export type Podcast = {
+  id: number;
+  name: string;
+  author: string;
+  genres: string;
+  releaseDate: string;
+  thumbnailUrl: string;
+};
+
+// src/entities/episode.ts
+export type Episode = {
+  id: number;
+  title: string;
+  releaseDate: string;
+  description: string;
+  duration: number;  // in seconds
+  url: string;
+  thumbnailUrl: string;
+  imageUrl: string;
+};
+```
+
+### Re-exports
+Use the barrel export from `src/entities/index.ts`:
+
+```typescript
+import { Podcast, Episode } from '@/entities';
+```
+
+## Error Handling
+
+### AppError Class
+Use `AppError` for typed errors:
+
+```typescript
+import { AppError, ErrorType } from '@/lib/errors';
+
+// Create specific error types
+throw AppError.notFound('Podcast', podcastId);
+throw AppError.network('iTunes API error');
+
+// Check error type
+if (error instanceof AppError && error.type === ErrorType.NOT_FOUND) {
+  // Handle not found
+}
+```
+
+### Assertions
+Use assertion helpers for runtime checks:
+
+```typescript
+import { assertExists, assertUnreachable } from '@/lib/errors';
+
+assertExists(data, 'podcast data');  // Throws if null/undefined
+
+// For exhaustive switch statements
+switch (type) {
+  case 'A': return handleA();
+  case 'B': return handleB();
+  default: assertUnreachable(type);
+}
+```
+
+## Data Fetching Patterns
+
+### With axios
+Use axios for HTTP requests:
+
+```typescript
+const { data } = await axios.get<ITunesResults>(url);
+```
+
+### Cache Queries
+Access cached data via QueryClient:
+
+```typescript
+export const findEpisodeInCache = (qc: QueryClient, podcastId: number) => {
+  const queriesData = qc.getQueriesData<PodcastWithEpisodes>({
+    queryKey: ['episodes', podcastId],
+  });
+  return queriesData.find(/* ... */);
+};
+```

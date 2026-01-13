@@ -1,0 +1,69 @@
+---
+description: How to add or edit Cursor rules in this project
+alwaysApply: false
+---
+# Cursor Rules Guide
+
+## Rules Location
+
+All rules are in `.cursor/rules/`:
+
+```
+.cursor/rules/
+├── index.mdc           # Always applied - project overview
+├── react-components.mdc # Component patterns
+├── state-management.mdc # Zustand & TanStack Query
+├── routing.mdc          # TanStack Router
+├── styling.mdc          # Tailwind & shadcn/ui
+├── api-data.mdc         # API & data fetching
+├── testing.mdc          # Vitest & MSW
+├── player.mdc           # Media player system
+└── cursor-rules.mdc     # This file
+```
+
+## Rule Types
+
+### Always Applied
+Set `alwaysApply: true` - applies to every conversation:
+
+```yaml
+---
+description: Project overview
+alwaysApply: true
+---
+```
+
+### Glob-Based
+Set `globs:` pattern - applies when matching files are involved:
+
+```yaml
+---
+description: Component patterns
+globs: src/components/**/*.tsx
+alwaysApply: false
+---
+```
+
+### Manual Reference
+Set `alwaysApply: false` without globs - agent decides when relevant.
+
+## Creating New Rules
+
+1. Create file in `.cursor/rules/` with `.mdc` extension
+2. Use kebab-case naming: `my-new-rule.mdc`
+3. Add frontmatter with description and applicability
+4. Write clear, actionable content with code examples
+
+## Frontmatter Structure
+
+```yaml
+---
+description: Short description shown in rule list
+globs: optional/path/**/*.ts,other/path/**/*.tsx
+alwaysApply: false
+---
+```
+
+- `description`: Required. Explains when/why to use the rule
+- `globs`: Optional. Comma-separated glob patterns
+- `alwaysApply`: Required. Boolean for automatic application

@@ -1,0 +1,310 @@
+---
+description: Testing patterns with Vitest, React Testing Library, and MSW
+globs: **/*.test.ts,**/*.test.tsx,src/test/**/*
+alwaysApply: false
+---
+# Testing
+
+## Philosophy
+
+### Less is More
+- **Don't over-test**: Focus on coverage through code paths, not redundant test cases
+- **Don't test third-party code**: Files like `cn.ts` that just wrap libraries (clsx, twMerge) don't need dedicated tests—they get coverage through component usage
+- **Combine assertions**: Multiple assertions in one test are fine when testing related behavior
+- **One test per code path**: Cover all branches, not all possible inputs
+
+### Integration Over Unit
+- Prefer integration tests for components connected to Zustand/Query
+- Test user workflows, not implementation details
+- Mock external APIs (MSW), but not internal state management
+
+### Testing Pyramid
+```
+      /\
+     /E2\     ← None (out of scope)
+    /----\
+   / Intg \   ← Many (components + state)
+  /--------\
+ /   Unit   \ ← Some (utils, store logic)
+/------------\
+```
+
+## Test Stack
+
+- **Vitest** - Test runner (Jest-compatible, Vite-native)
+- **@testing-library/react** - Component testing
+- **@testing-library/user-event** - User interaction simulation
+- **MSW** - Network request mocking at HTTP layer
+
+## Running Tests
+
+```bash
+npm test             # Watch mode
+npm run test:run     # Single run
+npm run test:ui      # Vitest UI
+npm run test:coverage  # With coverage
+```
+
+## File Structure
+
+Tests co-located with source files:
+
+```
+src/
+├── test/
+│   ├── setup.ts           # Global setup (MSW, mocks)
+│   ├── utils.tsx          # renderWithProviders
+│   └── mocks/
+│       ├── handlers.ts    # MSW request handlers
+│       ├── server.ts      # MSW server instance
+│       └── data/          # Mock data fixtures
+├── lib/
+│   ├── dates.ts
+│   └── dates.test.ts      # Co-located test
+└── store/
+    └── player/
+        ├── actions.ts
+        └── actions.test.ts
+```
+
+## Test Utilities
+
+### Custom Render with Providers
+
+```typescript
+// src/test/utils.tsx
+import { render, RenderOptions } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+export function renderWithProviders(
+  ui: ReactElement,
+  {
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
+    }),
+    ...renderOptions
+  }: RenderOptions & { queryClient?: QueryClient } = {}
+) {
+  function Wrapper({ children }: { children: React.ReactNode }) {
+    return (
+      <QueryClientProvider client={queryClient}>
+        {children}
+      </QueryClientProvider>
+    );
+  }
+  return { ...render(ui, { wrapper: Wrapper, ...renderOptions }), queryClient };
+}
+
+export * from '@testing-library/react';
+export { renderWithProviders as render };
+```
+
+### Global Setup
+
+```typescript
+// src/test/setup.ts
+import { cleanup } from '@testing-library/react';
+import '@testing-library/jest-dom/vitest';
+import { server } from './mocks/server';
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterEach(() => { server.resetHandlers(); cleanup(); });
+afterAll(() => server.close());
+
+// Mock HTMLMediaElement for player tests
+window.HTMLMediaElement.prototype.load = vi.fn();
+window.HTMLMediaElement.prototype.play = vi.fn().mockResolvedValue(undefined);
+window.HTMLMediaElement.prototype.pause = vi.fn();
+```
+
+## MSW Setup
+
+### Handlers
+
+```typescript
+// src/test/mocks/handlers.ts
+import { http, HttpResponse } from 'msw';
+import { mockPodcasts, mockEpisodes } from './data';
+
+export const handlers = [
+  http.get('/itunes/search', ({ request }) => {
+    const url = new URL(request.url);
+    const term = url.searchParams.get('term');
+    if (!term) return HttpResponse.json({ results: [] });
+    return HttpResponse.json({ resultCount: mockPodcasts.length, results: mockPodcasts });
+  }),
+
+  http.get('/itunes/lookup', ({ request }) => {
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
+    if (!id) return HttpResponse.json({ results: [] });
+    return HttpResponse.json({ results: [mockPodcasts[0], ...mockEpisodes] });
+  }),
+];
+```
+
+### Server
+
+```typescript
+// src/test/mocks/server.ts
+import { setupServer } from 'msw/node';
+import { handlers } from './handlers';
+export const server = setupServer(...handlers);
+```
+
+## Patterns
+
+### Unit Test (utility function)
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { formatDuration, formatDateToNow } from './dates';
+
+describe('dates', () => {
+  it('formats duration in mm:ss and hh:mm:ss', () => {
+    expect(formatDuration(90)).toBe('1:30');
+    expect(formatDuration(3665)).toBe('1:01:05');
+    expect(formatDuration(0)).toBe('0:00');
+  });
+
+  it('formats relative dates', () => {
+    // Test different date ranges in one test
+    expect(formatDateToNow('2024-01-01')).toMatch(/ago|yesterday/i);
+  });
+});
+```
+
+### Store Test (Zustand)
+
+```typescript
+import { describe, it, expect, beforeEach } from 'vitest';
+import { useAppStore } from '../index';
+import { act, renderHook } from '@testing-library/react';
+
+describe('PlayerSlice', () => {
+  beforeEach(() => {
+    const { result } = renderHook(() => useAppStore());
+    act(() => result.current.stop());
+  });
+
+  it('handles play/pause/stop lifecycle', () => {
+    const { result } = renderHook(() => useAppStore());
+
+    act(() => result.current.play());
+    expect(result.current.playState).toBe('PLAYING');
+
+    act(() => result.current.pause());
+    expect(result.current.playState).toBe('PAUSED');
+
+    act(() => result.current.stop());
+    expect(result.current.playState).toBe('STOPPED');
+  });
+});
+```
+
+### Component Test (integration)
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { render, screen, waitFor } from '@/test/utils';
+import userEvent from '@testing-library/user-event';
+import SearchBar from './SearchBar';
+
+describe('SearchBar', () => {
+  it('renders and handles input', async () => {
+    const setFilter = vi.fn();
+    render(<SearchBar filter="" setFilter={setFilter} placeholder="Search..." />);
+
+    expect(screen.getByPlaceholderText('Search...')).toBeInTheDocument();
+
+    await userEvent.type(screen.getByRole('textbox'), 'test');
+    expect(setFilter).toHaveBeenCalled();
+  });
+});
+```
+
+### Testing Error States
+
+```typescript
+it('displays error on API failure', async () => {
+  server.use(
+    http.get('/itunes/search', () => HttpResponse.json({ error: 'fail' }, { status: 500 }))
+  );
+
+  render(<HomePage />);
+  await userEvent.type(screen.getByRole('textbox'), 'query');
+
+  await waitFor(() => {
+    expect(screen.getByText(/error/i)).toBeInTheDocument();
+  });
+});
+```
+
+## Do's and Don'ts
+
+### DO ✅
+- Test user behavior, not implementation
+- Use semantic queries: `getByRole`, `getByLabelText`, `getByText`
+- Use `userEvent` over `fireEvent`
+- Wait for async operations with `waitFor`
+- Combine related assertions in one test
+
+### DON'T ❌
+- Test third-party libraries (clsx, twMerge, date-fns)
+- Create many tests for the same code path with different inputs
+- Mock Zustand store in integration tests
+- Test internal state or props directly
+
+## Coverage Goals
+
+| Area | Target |
+|------|--------|
+| Overall | 80%+ |
+| Utilities | 90%+ |
+| Store | 85%+ |
+| Components | 75%+ |
+
+### Exclusions
+- Config files (`*.config.ts`)
+- Type definitions (`*.d.ts`)
+- Entry point (`main.tsx`)
+- Generated files (`routeTree.gen.ts`)
+
+---
+
+## Implementation Phases
+
+> **Note**: Remove this section after testing implementation is complete.
+
+### Phase 1: Infrastructure ✅
+- [x] Install dependencies
+- [x] ESLint config for tests
+- [ ] Create `vitest.config.ts`
+- [ ] Create `src/test/setup.ts`
+- [ ] Create `src/test/utils.tsx`
+- [ ] Set up MSW (handlers, server, mock data)
+
+### Phase 2: Utility & Store Tests
+- [ ] Test `src/lib/` utilities (dates, errors, itunes)
+- [ ] Test `src/store/player/` (actions, selectors, utils)
+- [ ] Test `src/store/createSearchSlice.ts`
+- [ ] Test `src/lib/useDebounce.ts`
+
+### Phase 3: Component Tests
+- [ ] Test presentational components (Header, Footer)
+- [ ] Test integrated components (SearchBar, DataTable)
+- [ ] Test Player components
+- [ ] Test route components
+
+### Phase 4: Documentation & CI
+- [ ] Update README with testing info
+- [ ] Set up GitHub Actions workflow
+- [ ] Add coverage thresholds
+
+### Phase 5: Review & Refine
+- [ ] Review coverage gaps
+- [ ] Remove unnecessary tests
+- [ ] Document testing patterns
