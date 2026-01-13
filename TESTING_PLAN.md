@@ -601,7 +601,6 @@ describe('Player', () => {
 ### DO's ✅
 - **Test user behavior**, not implementation details
 - **Use semantic queries** (getByRole, getByLabelText, getByText)
-- **Test accessibility** (proper ARIA roles and labels)
 - **Mock external dependencies** (APIs with MSW)
 - **Write descriptive test names** that explain the scenario
 - **Use `userEvent`** over `fireEvent` for realistic interactions
@@ -615,7 +614,6 @@ describe('Player', () => {
 - **Don't test third-party libraries** (assume they work)
 - **Don't mock Zustand store** in integration tests
 - **Don't create tightly coupled tests** (test isolation)
-- **Don't ignore accessibility** in tests
 - **Don't forget to wait for async operations** (use waitFor)
 
 ---
@@ -695,13 +693,14 @@ jobs:
 
 ---
 
-## Questions & Considerations
+## Testing Decisions
 
-### Open Questions
-1. **Coverage thresholds**: Should we enforce coverage minimums in CI?
-2. **Snapshot tests**: Should we use snapshot testing for any components?
-3. **E2E tests**: Should we consider Playwright/Cypress in the future?
-4. **Visual regression**: Should we consider visual regression testing?
+### Confirmed Decisions
+1. **Coverage thresholds**: Target 80% overall, 90% utilities, 75% components ✅
+2. **Snapshot tests**: Not using snapshot testing ✅
+3. **E2E tests**: Not needed for this project ✅
+4. **Visual regression**: Not needed for this project ✅
+5. **Accessibility testing**: Not a priority for this project ✅
 
 ### Risks & Mitigations
 - **Risk**: Tests slow down development
@@ -723,4 +722,4 @@ This plan provides a comprehensive, modern approach to testing the Podcaster app
 - **Improves code quality** through testable design
 - **Enables CI/CD** with automated testing
 
-**Next Step**: Review this plan, provide feedback, and approve for implementation.
+**Next Step**: ✅ Plan approved - proceeding with Phase 1 implementation.
